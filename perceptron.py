@@ -3,6 +3,8 @@ perceptron.py
 Author :  G.MENEZ (2025)
 """
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import a_hyperplan as ah
 import a_hyperplan_side as ahs
@@ -83,7 +85,7 @@ def update_parameters(W, b, dW, db, learning_rate):
     return W, b
 
 #======================================
-def perceptron_train(X, y, winit, binit, fa=sigmoid, learning_rate=0.01, epochs=1000):
+def perceptron_train(X, y, winit, binit, fa=sigmoid, loss_type='mse', learning_rate=0.01, epochs=1000):
     """
     Entraîne un perceptron avec une fonction de décision sigmoïde (par defaut).
 
@@ -91,30 +93,42 @@ def perceptron_train(X, y, winit, binit, fa=sigmoid, learning_rate=0.01, epochs=
         X (ndarray) : Matrice d'entrée (m x d), où m est le nombre d'exemples et d le nombre de caractéristiques.
         y (ndarray) : Étiquettes correspondantes (m,). Les valeurs doivent être 0 ou 1.
         winit, binit : Modèle initial,
+        fa : Fonction d'activation (sigmoid par défaut)
+        loss_type (str) : Type de perte - 'mse' ou 'logloss'
         learning_rate (float) : Taux d'apprentissage.
         epochs (int) : Nombre d'itérations sur les données.
 
     Returns:
         w (ndarray): Poids ajustés (d,).
         b (float): Biais ajusté.
-        errors (list): Liste des erreurs quadratiques au fil des époques.
+        losses (list): Liste des erreurs au fil des époques.
     """
     W = winit
     b =  binit
     losses = []
+
+    # Sélectionner la fonction de perte et de gradients
+    if loss_type == 'mse':
+        loss_fn = mse_loss
+        backward_fn = backward_propagation_mse
+    elif loss_type == 'logloss':
+        loss_fn = log_loss
+        backward_fn = backward_propagation_log
+    else:
+        raise ValueError("loss_type doit être 'mse' ou 'logloss'")
 
     for epoch in range(epochs):
         # Calcul de la prédiction probabiliste
         y_out = forward_activation(X, W, b, fa)
 
         # Calcul des gradients
-        dW, db  = backward_propagation_mse(X, y, y_out)
+        dW, db = backward_fn(X, y, y_out)
 
         # Mise à jour des poids et du biais
-        W ,b = update_parameters(W, b, dW, db, learning_rate)
+        W, b = update_parameters(W, b, dW, db, learning_rate)
 
-        # Stocker l'erreur quadratique moyenne pour cette époque
-        losses.append(mse_loss(y, y_out))
+        # Stocker la perte pour cette époque
+        losses.append(loss_fn(y, y_out))
 
     return W, b, losses
 
@@ -171,4 +185,4 @@ if __name__ == "__main__":
     ax1.legend()
     ax1.grid(True)
 
-    plt.show()
+    plt.savefig("perceptron.png")

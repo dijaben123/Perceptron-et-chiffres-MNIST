@@ -3,6 +3,8 @@ Fichier : perceptron_classique.py
 Author : G.MENEZ (2025)
 """
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Utilise un backend non-interactif
 import matplotlib.pyplot as plt
 import a_hyperplan as ah
 import a_hyperplan_side as ahs
@@ -130,4 +132,5 @@ if __name__ == "__main__":
     ah.plot_points(axs[0], X_test, defcolor="orange")  # Plot tests points
     axs[0].legend()
     axs[0].grid(True)
-    plt.show()
+
+    plt.savefig("perceptron-classique.png")
