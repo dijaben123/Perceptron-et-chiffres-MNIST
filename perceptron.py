@@ -4,7 +4,7 @@ Author :  G.MENEZ (2025)
 """
 import numpy as np
 import matplotlib.pyplot as plt
-import a_hyperplan_side as ah
+import a_hyperplan as ah
 import a_hyperplan_side as ahs
 
 #======================================
